@@ -48,3 +48,41 @@ export const deleteUserById = async (req,res) => {
         })
     }
 }
+
+export const updateUserById = async (req,res) => {
+    try {
+        await sequelize.sync()
+        const {firstName,surname,email,phoneNumber} = req.body;
+    const user = User.update({
+        firstName: firstName,
+        surname: surname,
+        email: email,
+        phoneNumber: phoneNumber
+    },{
+        where: {
+            id: req.params.id
+        }
+    })
+} catch (error) {
+    res.status(400).json({
+        status:"failed",
+         data: error
+    })
+}
+}
+
+export const getAllUser = async(req,res) => {
+    try {
+        await sequelize.sync();
+        const user = await User.findAll()
+        res.status(200).json({
+            status: "success",
+            data: user
+        })
+    } catch (error) {
+        res.status(400).json({
+            status: "failed",
+            data: error
+        })
+    }
+}

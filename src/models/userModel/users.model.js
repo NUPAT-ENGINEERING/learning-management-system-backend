@@ -12,7 +12,8 @@ export const User = sequelize.define('user',{
     },
     email: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     phoneNumber: {
         type: DataTypes.INTEGER,
@@ -21,5 +22,9 @@ export const User = sequelize.define('user',{
     password: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    isAdmin: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     }
 })
