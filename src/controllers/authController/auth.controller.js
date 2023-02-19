@@ -172,15 +172,18 @@ export const forgotPassword =  async(req,res,next) => {
 
 export const getResetPassword = async (req,res,next) => {
 try {
-    const {id, token} = req.params;
+    const {id,token} = req.params;
     const user = await User.findOne({
         where: {
             id: id
         }
     })
+    console.log(token)
     if(id == user.id) {
       const secret = config.JwtPass;
-      const payload = Jwt.verify(token,secret)
+        Jwt.verify(token,secret,(err,data) => {
+            console.log(data)
+        })
       res.render('reset-password',{email: user.email});
     }else {
         res.status(400).json({
@@ -228,3 +231,7 @@ export const postResetPassword = async(req,res) => {
         })
     }
 }
+
+//alimisam_new-promise-db
+//new_promise
+//promise@new
