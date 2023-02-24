@@ -5,13 +5,13 @@ import bcrypt from 'bcrypt';
 export const registerUser = async (req,res) => {
     try {
         await sequelize.sync()
-const {firstName,surname,email,phoneNumber,password} = req.body;
+const {firstName,lastName,email,phoneNumber,password} = req.body;
       const hashedPassword = await bcrypt.hash(password, 10);  
         
       if(hashedPassword) {
         const user = await User.create({
             firstName: firstName,
-            surname: surname,
+            lastName: lastName,
             email: email,
             phoneNumber: phoneNumber,
             password: hashedPassword

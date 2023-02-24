@@ -2,7 +2,7 @@ import { User } from "../../models/userModel/users.model.js";
 import { sequelize } from "../../../databases.js";
 import { Config } from "../../config/config.js";
 import  Jwt  from "jsonwebtoken";
-import nodemailer from 'nodemailer'
+import { sendMail } from "../../utils/sendmail.js";
 import bcrypt from "bcrypt"
 import { config } from "dotenv";
 
@@ -21,7 +21,7 @@ try {
             fullName: user.fullName,
             email: user.email,
             isAdmin: user.isAdmin
-        },Config.JwtPass,{expiresIn: '12hr'})
+        },Config.JwtPass,{expiresIn: '12hrs'})
         res.status(200).json({
             status: 'success',
             data: user.email,
@@ -105,57 +105,11 @@ export const forgotPassword =  async(req,res,next) => {
         const token = Jwt.sign(payload,secret,{expiresIn: '15m'})
 
         const link = `http://localhost:8080/api/v1/auth/reset-password/${user.id}/${token}`
-        let mailTransporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-                user: "tech2dom@gmail.com",
-                pass: "jjqwywcbxaepqsoc"
-            }
-        })
 
-        let details = {
-            from: "tech2dom@gmail.com",
-            to: email,
-            subject: "test account",
-            html: `
-            <div style='
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            height: 300px;
-            width: 400px
-            '>
-            <h1 style='color: blue; font-size= 30px'>Reset Password</h1>
-        <a href=${link} style='
-        text-decoration: none;
-        '><button style='
-           width: 170px;
-           height: 50px;
-           border-radius: 10px;
-           border: none;
-        '>
-           click on link to reset password
-        </button></a>
-            </div>
-            `
-        }
+        sendMail(email,link)
 
-        mailTransporter.sendMail(details,(err) => {
-            if(err) {
-                res.status(400).json({
-                    status: 'failed',
-                    message: 'email not sent',
-                    data: err
-                })
-            }else {
-                res.status(201).json({
-                    status: 'success',
-                    message: 'email sent'
-                })
-            }
-        })
-        console.log(link)
+        res.status(200).send('password reset link sent to your email')
+       
     }else {
         res.status(400).json({
             status: 'failed',
@@ -178,12 +132,10 @@ try {
             id: id
         }
     })
-    console.log(token)
+   
     if(id == user.id) {
       const secret = config.JwtPass;
-        Jwt.verify(token,secret,(err,data) => {
-            console.log(data)
-        })
+    //  const payload = Jwt.verify(token,secret)
       res.render('reset-password',{email: user.email});
     }else {
         res.status(400).json({
@@ -201,29 +153,15 @@ try {
 export const postResetPassword = async(req,res) => {
     try {
         await sequelize.sync()
-        const {id,token} = req.params;
-        const {password,confirmPassword} = req.body;
-
-        console.log(password,confirmPassword)
-        const user = await User.findOne({
-            where: {
-                id: id
-            }
+        const {id} = req.params;
+        const {password} = req.body;
+      console.log(password)
+        User.update({
+            password: 'hello'
+        },{
+            where: id,
         })
-
-        if(user) {
-            const secret = Config.JwtPass;
-          const payload = Jwt.verify(token,secret)
-
-             res.status(200).json({
-                status: 'success',
-                data: {
-                    password,
-                    confirmPassword
-                }
-             })
-
-        }
+        
     } catch (error) {
         res.status(400).json({
             status: 'failed',
@@ -231,7 +169,3 @@ export const postResetPassword = async(req,res) => {
         })
     }
 }
-
-//alimisam_new-promise-db
-//new_promise
-//promise@new

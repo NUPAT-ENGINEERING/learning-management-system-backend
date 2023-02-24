@@ -1,0 +1,61 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Nupat learning Management System backend api",
+        "description": "school api",
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+        "host": "localhost:8080/api/v1",
+        "basePath": "/",
+        "securityDefinitions": {
+          "bearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "scheme": "Bearer",
+            "in": "header"
+          }
+      },
+        "tags": [
+            {
+                "name":"Users",
+                "description": "the api for students crud operation"
+            },
+            {
+              "name":"Auth",
+              "description": "the api for admin crud operation"
+            }
+        ],
+        "schemes": ["http"],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+       "paths": {
+            "/user/register": {
+              "post": {
+                "tags": ["Users"],
+                "summary": "for user signup",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "body",
+                  "description": "for user to signup to the system",
+                  "schema": {
+                    "$ref": "#/definitions/Users"
+                    }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                      "description": "New user is created",
+                      "schema": {
+                        "$ref": "#/definitions/Users"
+                      }
+                    }
+                  }
+              }
+        }
+    }
+}
